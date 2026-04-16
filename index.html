@@ -2,39 +2,435 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>С днём рождения, [Имя подруги]!</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>С днём рождения, Соня! 🎉</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Стили для карусели — исправлено для полного отображения фото */
+        .carousel-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background: #000;
+        }
+        
+        .carousel-slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .carousel-slide {
+            flex-shrink: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* ГЛАВНОЕ ИСПРАВЛЕНИЕ: фото теперь не обрезается */
+        .carousel-slide img {
+            width: 100%;
+            height: auto;  /* вместо фиксированной высоты */
+            max-height: 500px;
+            object-fit: contain;  /* вместо cover — показывает всё фото */
+            background: #1a1a2e;
+            display: block;
+        }
+        
+        /* Адаптация для очень высоких фото */
+        @media (max-width: 768px) {
+            .carousel-slide img {
+                max-height: 400px;
+            }
+        }
+        
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 12px 18px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .carousel-btn:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .carousel-prev {
+            left: 20px;
+        }
+        
+        .carousel-next {
+            right: 20px;
+        }
+        
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-dot.active {
+            width: 24px;
+            border-radius: 10px;
+            background: white;
+        }
+        
+        /* Стили для всплывающего сообщения (вместо alert) */
+        .toast-message {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            white-space: nowrap;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .toast-message.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* Подсказка для автовоспроизведения музыки */
+        .music-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Контейнер для подписи под фото */
+        .photo-caption {
+            padding: 12px 16px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+        }
+        
+        .photo-caption p {
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            margin: 0;
+        }
+    </style>
 </head>
-<body>
-
-    <!-- Музыкальный плеер (скрытый, но управляемый) -->
-    <audio id="birthdaySong" loop>
-        <source src="music/happy-birthday.mp3" type="audio/mpeg">
-        Ваш браузер не поддерживает аудио.
-    </audio>
-
-    <!-- Главный контейнер -->
-    <div class="container">
-        <h1 class="glow-text">🎉 С ДНЁМ РОЖДЕНИЯ, [ИМЯ]! 🎉</h1>
-        <p class="subtitle">Кликни по фото — почувствуй магию</p>
-
-        <!-- Галерея -->
-        <div class="gallery" id="gallery">
-            <!-- Сюда динамически добавим фото через JS -->
-        </div>
-
-        <!-- Кнопка управления музыкой -->
-        <button id="musicToggle" class="music-btn">🔇 Включить музыку</button>
-
-        <!-- Кнопка копирования ссылки -->
-        <button id="copyLinkBtn" class="copy-btn">📎 Отправить подруге ссылку</button>
-        <span id="copyMessage" class="copy-message"></span>
+<body class="bg-gradient-to-br from-purple-700 via-pink-600 to-red-500 min-h-screen">
+    
+    <!-- Конфетти canvas -->
+    <canvas id="confetti" class="fixed inset-0 pointer-events-none z-50"></canvas>
+    
+    <!-- Подсказка для автовоспроизведения -->
+    <div id="musicHint" class="music-hint">
+        🎵 Нажмите для музыки
     </div>
 
-    <!-- Эффект конфетти (библиотека) -->
-    <canvas id="confettiCanvas" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999;"></canvas>
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Заголовок -->
+        <div class="text-center mb-8 float-animation">
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-4 drop-shadow-lg">
+                🎉С Днём Рождения🎉
+                 Соня
+            </h1>
+            <p class="text-xl text-pink-100">✨ Ты — лучшая ✨</p>
+        </div>
 
-    <script src="script.js"></script>
+        <!-- КАРУСЕЛЬ -->
+        <div class="carousel-container">
+            <button class="carousel-btn carousel-prev" id="prevBtn">❮</button>
+            <div class="carousel-slides" id="carouselSlides">
+                <!-- Фото будут добавлены через JS -->
+            </div>
+            <button class="carousel-btn carousel-next" id="nextBtn">❯</button>
+        </div>
+        <div class="carousel-dots" id="carouselDots"></div>
+
+        <!-- Кнопки -->
+        <div class="text-center space-x-4 mt-10">
+            <button id="musicBtn" class="bg-white/20 backdrop-blur-md hover:bg-white/30 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 hover:scale-105 shadow-lg">
+                🎵 Включить музыку
+            </button>
+        </div>
+        <div id="copyMsg" class="text-center mt-4 text-green-200 font-semibold"></div>
+    </div>
+
+    <audio id="birthdaySong" loop preload="auto">
+        <source src="music/happy-birthday.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ========== ФОТОГРАФИИ из папки images ==========
+        const photoFiles = [
+            "1.jpg",
+            "2.jpg", 
+            "3.jpg",
+            "4.jpg",
+            "5.jpg",
+            "6.jpg",
+            "7.jpg",
+            "8.jpg",
+        ];
+        
+        const captions = [
+            "✨ С днём рождения, Соня! ✨",
+            "💖 Улыбайся чаще 💖",
+            "🌟 Самая независимая 🌟",
+            "⭐ Ты — суперзвезда ⭐",
+            "🚀 Оставайся отзывчивой 🚀",
+            "💫 Просто счастье 💫",
+            "💫 Не ограничивай себя 💫",
+            "💖 Мы тебя любим 💖"
+        ];
+        
+        const photos = photoFiles.map((file, index) => ({
+            src: `images/${file}`,
+            caption: captions[index] || `Воспоминание ${index + 1}`
+        }));
+
+        // ========== КАРУСЕЛЬ ==========
+        let currentIndex = 0;
+        const slidesContainer = document.getElementById('carouselSlides');
+        const dotsContainer = document.getElementById('carouselDots');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        photos.forEach((photo, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            slide.innerHTML = `
+                <img src="${photo.src}" alt="${photo.caption}" onerror="this.src='https://picsum.photos/600/500?random=${index}'">
+                <div class="photo-caption">
+                    <p>${photo.caption}</p>
+                </div>
+            `;
+            slidesContainer.appendChild(slide);
+            
+            const dot = document.createElement('div');
+            dot.className = 'carousel-dot';
+            dot.addEventListener('click', () => goToSlide(index));
+            dotsContainer.appendChild(dot);
+        });
+        
+        function updateCarousel() {
+            slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+            const dots = document.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, index) => {
+                if (index === currentIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        
+        function goToSlide(index) {
+            if (index < 0) index = photos.length - 1;
+            if (index >= photos.length) index = 0;
+            currentIndex = index;
+            updateCarousel();
+        }
+        
+        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+        
+        // Свайп для мобильных устройств
+        let touchStartX = 0;
+        slidesContainer.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        slidesContainer.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 50) goToSlide(currentIndex + 1);
+            if (touchEndX > touchStartX + 50) goToSlide(currentIndex - 1);
+        });
+        
+        updateCarousel();
+
+        // ========== ТОСТ-СООБЩЕНИЯ ==========
+        function showToast(message, duration = 2000) {
+            const oldToast = document.querySelector('.toast-message');
+            if (oldToast) oldToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-message';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // ========== МУЗЫКА ==========
+        const audio = document.getElementById('birthdaySong');
+        const musicBtn = document.getElementById('musicBtn');
+        const musicHint = document.getElementById('musicHint');
+        let isPlaying = false;
+        
+        function playMusic() {
+            audio.play().then(() => {
+                isPlaying = true;
+                musicBtn.innerHTML = '🔇 Выключить музыку';
+                if (musicHint) musicHint.style.display = 'none';
+                showToast('🎵 Музыка играет! 🎵', 1500);
+            }).catch(() => {
+                showToast('🔊 Нажми на кнопку музыки', 2000);
+            });
+        }
+        
+        document.addEventListener('click', function initAudio() {
+            if (!isPlaying) playMusic();
+            document.removeEventListener('click', initAudio);
+        });
+        
+        if (musicHint) {
+            musicHint.addEventListener('click', () => {
+                if (!isPlaying) playMusic();
+                else {
+                    audio.pause();
+                    isPlaying = false;
+                    musicBtn.innerHTML = '🎵 Включить музыку';
+                    showToast('🔇 Музыка выключена', 1000);
+                }
+            });
+        }
+        
+        musicBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                musicBtn.innerHTML = '🎵 Включить музыку';
+                showToast('🔇 Музыка выключена', 1000);
+            } else {
+                playMusic();
+            }
+        });
+
+        // ========== КОПИРОВАНИЕ ССЫЛКИ ==========
+        const copyBtn = document.getElementById('copyBtn');
+        const copyMsg = document.getElementById('copyMsg');
+        
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(window.location.href);
+            copyMsg.textContent = '✅ Ссылка скопирована!';
+            setTimeout(() => copyMsg.textContent = '', 2000);
+        });
+
+        // ========== КОНФЕТТИ ==========
+        let confettiActive = false;
+        let confettiCtx, confettiCanvas, confettiParticles = [];
+        
+        function startConfetti() {
+            if (confettiActive) return;
+            confettiActive = true;
+            confettiCanvas = document.getElementById('confetti');
+            confettiCtx = confettiCanvas.getContext('2d');
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+            
+            confettiParticles = [];
+            for (let i = 0; i < 150; i++) {
+                confettiParticles.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                    size: Math.random() * 8 + 4,
+                    color: `hsl(${Math.random() * 360}, 80%, 60%)`,
+                    speed: Math.random() * 4 + 2,
+                    angle: Math.random() * Math.PI * 2
+                });
+            }
+            
+            function draw() {
+                if (!confettiActive) return;
+                confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                for (let p of confettiParticles) {
+                    confettiCtx.fillStyle = p.color;
+                    confettiCtx.fillRect(p.x, p.y, p.size, p.size * 0.6);
+                    p.y += p.speed;
+                    p.x += Math.sin(p.angle) * 1.5;
+                    if (p.y > confettiCanvas.height) {
+                        p.y = -20;
+                        p.x = Math.random() * confettiCanvas.width;
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+            setTimeout(() => {
+                confettiActive = false;
+                if (confettiCtx) confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                confettiParticles = [];
+            }, 2500);
+        }
+        
+        slidesContainer.addEventListener('click', () => {
+            startConfetti();
+            const messages = [
+                '🎈 Ура, Соня! 🎈',
+                '🎉 С днём рождения! 🎉',
+                '💖 Ты самая лучшая! 💖',
+                '🥳 Обнимаю крепко! 🥳',
+                '✨ Ты — волшебство! ✨',
+                '⭐ Сияй ярко! ⭐',
+                '🌸 Счастья тебе! 🌸'
+            ];
+            showToast(messages[Math.floor(Math.random() * messages.length)], 1500);
+        });
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                showToast('🎁 Привет, Соня! Нажми на фото для сюрприза 🎁', 4000);
+                startConfetti();
+            }, 500);
+        });
+    </script>
 </body>
 </html>
