@@ -1,0 +1,140 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: white;
+    text-shadow: 0 0 10px rgba(255,255,255,0.8);
+    margin-bottom: 15px;
+    animation: fadeInDown 1s ease;
+}
+
+.glow-text {
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 5px white; }
+    to { text-shadow: 0 0 20px #ffeb3b, 0 0 30px #ff9800; }
+}
+
+.subtitle {
+    color: #f0f0f0;
+    margin-bottom: 40px;
+    font-size: 1.2rem;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.photo-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    animation: fadeInUp 0.6s ease backwards;
+}
+
+.photo-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.photo-card:active {
+    transform: scale(0.98);
+}
+
+.photo-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+}
+
+.photo-caption {
+    padding: 15px;
+    font-weight: bold;
+    color: #333;
+    background: white;
+}
+
+/* Кнопки */
+.music-btn, .copy-btn {
+    background: #ff6b6b;
+    border: none;
+    padding: 12px 28px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    color: white;
+    cursor: pointer;
+    margin: 10px;
+    transition: 0.2s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.music-btn:hover, .copy-btn:hover {
+    background: #ff4757;
+    transform: scale(1.05);
+}
+
+.copy-message {
+    display: inline-block;
+    margin-left: 15px;
+    color: #c3e6cb;
+    font-weight: bold;
+}
+
+/* Анимации */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    .gallery {
+        grid-template-columns: 1fr;
+    }
+}
